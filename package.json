@@ -1,0 +1,21 @@
+{
+  "name": "vite_p1",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 140.109.82.44 --port 8080",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "jquery": "^3.6.4",
+    "leaflet": "^1.8.0",
+    "vue": "^3.2.47"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "@vue-leaflet/vue-leaflet": "^0.9.0",
+    "vite": "^4.3.2"
+  }
+}

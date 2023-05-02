@@ -1,0 +1,50 @@
+.mapContainer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.legend {
+    position: absolute;
+    z-index: 1500; /*需大於mapContainer才能在最上層*/
+    bottom: 5%;
+    right: 5%;
+    pointer-events: none;
+}
+.legend > * {
+    cursor: grab;
+    pointer-events: all;
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    right: 0;
+}
+
+/* .legend :deep(.tick) {
+  stroke-width: 2px;
+  color: black;
+} */
+
+.legend :deep(text) {
+    font: bold 16px sans-serif;
+    fill: black;
+    paint-order: stroke;
+    stroke-width: 2px;
+    stroke: white;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+}
+
+.pgaLegend :deep(svg > g:first-child),
+.depthLegend :deep(image) {
+    outline: solid 2px black;
+}
+
+.pgaLegend :deep(rect) {
+    background: linear-gradient(#e66465, #9198e5);
+}
+
+.pgaLegend :deep(.tick > line) {
+    display: none;
+}

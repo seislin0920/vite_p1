@@ -1,15 +1,16 @@
 .mapContainer {
+    width: 75%;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
-    right: 0;
+    right: 20%;
 }
 .legend {
     position: absolute;
-    z-index: 1500; /*需大於mapContainer才能在最上層*/
+    z-index: 1500; /*需大於mapContainer才能顯現在最上層*/
     bottom: 5%;
-    right: 5%;
+    right: 30%;
     pointer-events: none;
 }
 .legend > * {

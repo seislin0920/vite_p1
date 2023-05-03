@@ -7,6 +7,7 @@ import 'leaflet-draw/dist/leaflet.draw'
 import 'leaflet-draw/dist/leaflet.draw.css'
 
 import { LegendScope, getPgaScale, getColorLegend } from '@/components/statics/functions.js'
+import checkbox from '@/components/checkbox.vue'
 
 const mapContainer = ref(null)
 const customOptions = {
@@ -70,7 +71,7 @@ onMounted(() => {
         vertical: true,
     }
     // console.debug(d3.schemeRdBu[9]);
-    let pgaLegend = document.querySelector('div.legend>.pgaLegend')
+    let pgaLegend = $('div.legend>.pgaLegend')
     if (pgaLegend) pgaLegend.append(getColorLegend(config))
     //可移動
     let legendNodes = document.querySelectorAll('.legend>div')
@@ -88,7 +89,7 @@ onMounted(() => {
         opacity: 0.6,
     }).bringToFront(map)
 
-    //cwb震度圖
+    //CWB震度圖
     let cwb = 'src/assets/Data/2023/2023.080.01.45.19/Int/CWB/2023020a.png'
     const cwb_st = [
         [26.029563, 123.12703],
@@ -141,7 +142,7 @@ onMounted(() => {
     for (var i = 1; i < tmpData.length; i++) {
         stations.push(tmpData[i])
     }
-    //測站樣式
+    // //測站樣式
     let markers = []
     const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
     stations.forEach((location) => {
@@ -160,12 +161,11 @@ onMounted(() => {
                     location[1] +
                     '<br />' +
                     'Longitude: ' +
-                    location[2],
-                customOptions
+                    location[2]
             )
         )
     })
-    const Sta = L.layerGroup(markers)
+    // const Sta = L.layerGroup(markers).addTo(map)
 
     //地震事件
     const events = L.tileLayer('src/assets/events/{z}/{x}/{y}.png', {
@@ -194,7 +194,7 @@ onMounted(() => {
     }
     const overlayMaps = {
         Geology: tw_geology,
-        'P-Alert_stalist': Sta,
+        // 'P-Alert_stalist': Sta,
         'Event(2022-01-03~2023-04-09)': events,
         CWB_intensity: cwb_int,
         'P-Alert': pa_int,
@@ -204,12 +204,12 @@ onMounted(() => {
 </script>
 
 <template>
-    <!-- <head>
-        <link rel="stylesheet" href="src/components/statics/pgascale.css" />
-    </head> -->
     <div class="mapContainer" ref="mapContainer"></div>
     <div class="legend">
         <div class="pgaLegend"></div>
+        <!-- <input type="checkbox" id="PAst" v-model="markers" />
+        <label for="PAst">PAst</label> -->
+        <!-- <checkbox /> -->
     </div>
 </template>
 

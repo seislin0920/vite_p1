@@ -6,6 +6,13 @@
     left: 0;
     right: 20%;
 }
+.checkbox {
+    position: absolute;
+    z-index: 1500; /*需大於mapContainer才能顯現在最上層*/
+    top: 5%;
+    right: 10%;
+}
+
 .legend {
     position: absolute;
     z-index: 1500; /*需大於mapContainer才能顯現在最上層*/

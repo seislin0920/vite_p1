@@ -1,25 +1,23 @@
-<script>
-export default {
-    data() {
-        return {
-            isChecked: false,
-            message: '選擇我',
-        }
-    },
-    methods: {
-        onChange() {
-            console.log('checkbox狀態已改變')
-            // 在這裡添加你想要執行的程式碼
-        },
-    },
-}
+<script setup>
+import { ref, watch } from 'vue'
+
+// const name = ref('Jay')
+// const setname = () => {
+//     name.value = 'Mike'
+// }
+const num = ref(5)
+
+watch(num, (newnum) => {
+    console.log(newnum)
+})
 </script>
 
 <template>
-    <div>Checked names: {{ checkedNames }}</div>
-
-    <input type="checkbox" id="checkbox" v-model="isChecked" v-on:change="onChange" />
-    <label for="checkbox">{{ message }}</label>
+    <div>
+        <input type="text" v-model.trim="num" />
+        {{ num }}
+        <!-- <button @click="setname">Change_name</button> -->
+    </div>
 </template>
 
 <style></style>

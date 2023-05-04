@@ -1,18 +1,49 @@
 <script setup>
 import L from 'leaflet'
 import $ from 'jquery'
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw'
 import 'leaflet-draw/dist/leaflet.draw.css'
 
 import { LegendScope, getPgaScale, getColorLegend } from '@/components/statics/functions.js'
-import checkbox from '@/components/checkbox.vue'
+// import checkbox from '@/components/checkbox.vue'
 
 const mapContainer = ref(null)
 const customOptions = {
     minWidth: '150',
 }
+//Stations(P-Alert)讀取與篩選
+let tmpData = []
+$.ajax({
+    url: 'src/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_PGA.txt',
+    method: 'Get', //request method
+    dataType: 'text', //不設定會自動判斷
+    async: false, //async 同步請求
+    success: (result) => {
+        let tmp = result.split('\n') // \n 換行
+        tmp.forEach((row) => {
+            if (row != '') {
+                let col = row.trim().split(/\s+/)
+                tmpData.push(col)
+            }
+        })
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+        // console.error(jqXHR, textStatus, errorThrown);
+        console.error(jqXHR, textStatus, errorThrown)
+    },
+})
+let stations = []
+for (var i = 1; i < tmpData.length; i++) {
+    stations.push(tmpData[i])
+}
+
+let CG = () => ({})
+let CCI = () => ({})
+let CPAI = () => ({})
+let CPAS = () => ({})
+let Cevent = () => ({})
 
 onMounted(() => {
     const map = L.map(mapContainer.value, {
@@ -87,7 +118,10 @@ onMounted(() => {
         attribution: 'tw_geology',
         zoomControl: true, // 是否秀出 - + 按鈕
         opacity: 0.6,
-    }).bringToFront(map)
+    })
+    CG = (e) => {
+        e.target.checked ? tw_geology.addTo(map) : tw_geology.remove(map)
+    }
 
     //CWB震度圖
     let cwb = 'src/assets/Data/2023/2023.080.01.45.19/Int/CWB/2023020a.png'
@@ -102,6 +136,9 @@ onMounted(() => {
         }),
     ]
     const cwb_int = L.layerGroup(cwb_over)
+    CCI = (e) => {
+        e.target.checked ? cwb_int.addTo(map) : cwb_int.remove(map)
+    }
 
     //P-Alert震度圖
     let pa = 'src/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_contour.png'
@@ -116,33 +153,11 @@ onMounted(() => {
         }),
     ]
     const pa_int = L.layerGroup(pa_over)
-
-    //Stations(P-Alert)
-    let tmpData = []
-    $.ajax({
-        url: 'src/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_PGA.txt',
-        method: 'Get', //request method
-        dataType: 'text', //不設定會自動判斷
-        async: false, //async 同步請求
-        success: (result) => {
-            let tmp = result.split('\n') // \n 換行
-            tmp.forEach((row) => {
-                if (row != '') {
-                    let col = row.trim().split(/\s+/)
-                    tmpData.push(col)
-                }
-            })
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            // console.error(jqXHR, textStatus, errorThrown);
-            console.error(jqXHR, textStatus, errorThrown)
-        },
-    })
-    let stations = []
-    for (var i = 1; i < tmpData.length; i++) {
-        stations.push(tmpData[i])
+    CPAI = (e) => {
+        e.target.checked ? pa_int.addTo(map) : pa_int.remove(map)
     }
-    // //測站樣式
+
+    // //P_Alert測站樣式
     let markers = []
     const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
     stations.forEach((location) => {
@@ -165,7 +180,10 @@ onMounted(() => {
             )
         )
     })
-    // const Sta = L.layerGroup(markers).addTo(map)
+    const Sta = L.layerGroup(markers)
+    CPAS = (e) => {
+        e.target.checked ? Sta.addTo(map) : Sta.remove(map)
+    }
 
     //地震事件
     const events = L.tileLayer('src/assets/events/{z}/{x}/{y}.png', {
@@ -173,7 +191,10 @@ onMounted(() => {
         minZoom: 6,
         attribution: '2022-01-03~2023-04-09',
         zoomControl: true, // 是否秀出 - + 按鈕
-    }).bringToFront(map)
+    })
+    Cevent = (e) => {
+        e.target.checked ? events.addTo(map) : events.remove(map)
+    }
 
     //esri
     const esri = L.tileLayer(
@@ -199,7 +220,7 @@ onMounted(() => {
         CWB_intensity: cwb_int,
         'P-Alert': pa_int,
     }
-    L.control.layers(changeLayer, overlayMaps).addTo(map)
+    L.control.layers(changeLayer).addTo(map)
 })
 </script>
 
@@ -207,10 +228,19 @@ onMounted(() => {
     <div class="mapContainer" ref="mapContainer"></div>
     <div class="legend">
         <div class="pgaLegend"></div>
-        <!-- <input type="checkbox" id="PAst" v-model="markers" />
-        <label for="PAst">PAst</label> -->
-        <!-- <checkbox /> -->
+    </div>
+    <div class="checkbox">
+        <input type="checkbox" id="Geology" @click="CG" />
+        <label for="Geology">Geology</label>
+        <input type="checkbox" id="CWB_Intensity" @click="CCI" />
+        <label for="CWB_Intensity">CWB_Intensity</label>
+        <input type="checkbox" id="P-Alert_Intensity" @click="CPAI" />
+        <label for="P-Alert_Intensity">P-Alert_Intensity</label>
+        <input type="checkbox" id="PAS" @click="CPAS" />
+        <label for="PAS">P-Alert_stalist</label>
+        <input type="checkbox" id="events" @click="Cevent" />
+        <label for="events">Event(2022-01-03~2023-04-09)</label>
     </div>
 </template>
 
-<style lang="css" scoped src="@/components/statics/pgascale.css"></style>
+<style lang="css" scoped src="@/components/statics/tile.css"></style>

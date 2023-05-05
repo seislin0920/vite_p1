@@ -45,10 +45,11 @@ let CPAI = () => ({})
 let CPAS = () => ({})
 let Cevent = () => ({})
 
+//Leaflet
 onMounted(() => {
     const map = L.map(mapContainer.value, {
         center: [23.742197, 120.879237],
-        zoom: 7,
+        zoom: 7.5,
     })
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 13,
@@ -117,11 +118,9 @@ onMounted(() => {
         minZoom: 6,
         attribution: 'tw_geology',
         zoomControl: true, // 是否秀出 - + 按鈕
-        opacity: 0.6,
+        opacity: 0.8,
+        zIndex: 2000,
     })
-    CG = (e) => {
-        e.target.checked ? tw_geology.addTo(map) : tw_geology.remove(map)
-    }
 
     //CWB震度圖
     let cwb = 'src/assets/Data/2023/2023.080.01.45.19/Int/CWB/2023020a.png'
@@ -131,14 +130,11 @@ onMounted(() => {
     ]
     let cwb_over = [
         L.imageOverlay(cwb, cwb_st, {
-            opacity: 0.4,
+            opacity: 0.8,
             interactive: true, //mouse event 可觸發
         }),
     ]
     const cwb_int = L.layerGroup(cwb_over)
-    CCI = (e) => {
-        e.target.checked ? cwb_int.addTo(map) : cwb_int.remove(map)
-    }
 
     //P-Alert震度圖
     let pa = 'src/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_contour.png'
@@ -148,16 +144,13 @@ onMounted(() => {
     ]
     let pa_over = [
         L.imageOverlay(pa, pa_st, {
-            opacity: 0.7,
+            opacity: 0.9,
             interactive: true, //mouse event 可觸發
         }),
     ]
     const pa_int = L.layerGroup(pa_over)
-    CPAI = (e) => {
-        e.target.checked ? pa_int.addTo(map) : pa_int.remove(map)
-    }
 
-    // //P_Alert測站樣式
+    // //P-Alert測站樣式
     let markers = []
     const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
     stations.forEach((location) => {
@@ -170,7 +163,7 @@ onMounted(() => {
             }).bindPopup(
                 `<b>${location[0]}</b>` +
                     '<hr />' +
-                    'network: P_Alert' +
+                    'network: P-Alert' +
                     '<br />' +
                     'Latitude: ' +
                     location[1] +
@@ -181,9 +174,6 @@ onMounted(() => {
         )
     })
     const Sta = L.layerGroup(markers)
-    CPAS = (e) => {
-        e.target.checked ? Sta.addTo(map) : Sta.remove(map)
-    }
 
     //地震事件
     const events = L.tileLayer('src/assets/events/{z}/{x}/{y}.png', {
@@ -191,10 +181,8 @@ onMounted(() => {
         minZoom: 6,
         attribution: '2022-01-03~2023-04-09',
         zoomControl: true, // 是否秀出 - + 按鈕
+        zIndex: 2000,
     })
-    Cevent = (e) => {
-        e.target.checked ? events.addTo(map) : events.remove(map)
-    }
 
     //esri
     const esri = L.tileLayer(
@@ -206,7 +194,7 @@ onMounted(() => {
                 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
             zoomControl: true, // 是否秀出 - + 按鈕
         }
-    )
+    ).bringToBack()
 
     //切換
     const changeLayer = {
@@ -221,6 +209,22 @@ onMounted(() => {
         'P-Alert': pa_int,
     }
     L.control.layers(changeLayer).addTo(map)
+
+    CG = (e) => {
+        e.target.checked ? tw_geology.addTo(map) : tw_geology.remove(map)
+    }
+    CCI = (e) => {
+        e.target.checked ? cwb_int.addTo(map) : cwb_int.remove(map)
+    }
+    CPAI = (e) => {
+        e.target.checked ? pa_int.addTo(map) : pa_int.remove(map)
+    }
+    CPAS = (e) => {
+        e.target.checked ? Sta.addTo(map) : Sta.remove(map)
+    }
+    Cevent = (e) => {
+        e.target.checked ? events.addTo(map) : events.remove(map)
+    }
 })
 </script>
 
@@ -230,16 +234,23 @@ onMounted(() => {
         <div class="pgaLegend"></div>
     </div>
     <div class="checkbox">
-        <input type="checkbox" id="Geology" @click="CG" />
-        <label for="Geology">Geology</label>
-        <input type="checkbox" id="CWB_Intensity" @click="CCI" />
-        <label for="CWB_Intensity">CWB_Intensity</label>
-        <input type="checkbox" id="P-Alert_Intensity" @click="CPAI" />
-        <label for="P-Alert_Intensity">P-Alert_Intensity</label>
-        <input type="checkbox" id="PAS" @click="CPAS" />
-        <label for="PAS">P-Alert_stalist</label>
-        <input type="checkbox" id="events" @click="Cevent" />
-        <label for="events">Event(2022-01-03~2023-04-09)</label>
+        <label class="container"> <input type="checkbox" @click="CG" /><span class="checkmark"></span>Geology</label>
+
+        <label class="container"
+            ><input type="checkbox" @click="CCI" /><span class="checkmark"></span>CWB_Intensity</label
+        >
+
+        <label class="container"
+            ><input type="checkbox" @click="CPAI" /><span class="checkmark"></span>P-Alert_Intensity</label
+        >
+
+        <label class="container"
+            ><input type="checkbox" @click="CPAS" /><span class="checkmark"></span>P-Alert_stalist</label
+        >
+
+        <label class="container"
+            ><input type="checkbox" @click="Cevent" /><span class="checkmark"></span>Event(2022-01-03~2023-04-09)</label
+        >
     </div>
 </template>
 

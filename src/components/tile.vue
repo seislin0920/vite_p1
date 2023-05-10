@@ -1,12 +1,12 @@
 <script setup>
-import L from 'leaflet'
 import $ from 'jquery'
-import { onMounted, reactive, ref } from 'vue'
-import 'leaflet/dist/leaflet.css'
+import L from 'leaflet'
 import 'leaflet-draw/dist/leaflet.draw'
 import 'leaflet-draw/dist/leaflet.draw.css'
+import 'leaflet/dist/leaflet.css'
+import { onMounted, ref } from 'vue'
 
-import { LegendScope, getPgaScale, getColorLegend } from '@/components/statics/functions.js'
+import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
 // import checkbox from '@/components/checkbox.vue'
 
 const mapContainer = ref(null)
@@ -16,7 +16,7 @@ const customOptions = {
 //Stations(P-Alert)讀取與篩選
 let tmpData = []
 $.ajax({
-    url: 'src/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_PGA.txt',
+    url: 'src/components/statics/20230321014519_PGA.txt',
     method: 'Get', //request method
     dataType: 'text', //不設定會自動判斷
     async: false, //async 同步請求
@@ -113,7 +113,7 @@ onMounted(() => {
     })
 
     //地質圖
-    const tw_geology = L.tileLayer('src/assets/tw_geology/{z}/{x}/{y}.png', {
+    const tw_geology = L.tileLayer('http://140.109.82.44/assets/tw_geology/{z}/{x}/{y}.png', {
         maxZoom: 14,
         minZoom: 6,
         attribution: 'tw_geology',
@@ -123,7 +123,7 @@ onMounted(() => {
     })
 
     //CWB震度圖
-    let cwb = 'src/assets/Data/2023/2023.080.01.45.19/Int/CWB/2023020a.png'
+    let cwb = 'http://140.109.82.44/assets/Data/2023/2023.080.01.45.19/Int/CWB/2023020a.png'
     const cwb_st = [
         [26.029563, 123.12703],
         [20.867285, 118.726656],
@@ -137,7 +137,7 @@ onMounted(() => {
     const cwb_int = L.layerGroup(cwb_over)
 
     //P-Alert震度圖
-    let pa = 'src/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_contour.png'
+    let pa = 'http://140.109.82.44/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_contour.png'
     const pa_st = [
         [25.303, 122.003],
         [21.890895, 120.048],
@@ -176,10 +176,10 @@ onMounted(() => {
     const Sta = L.layerGroup(markers)
 
     //地震事件
-    const events = L.tileLayer('src/assets/events/{z}/{x}/{y}.png', {
+    const events = L.tileLayer('http://140.109.82.44/assets/seismicity_1990_M4/{z}/{x}/{y}.png', {
         maxZoom: 13,
         minZoom: 6,
-        attribution: '2022-01-03~2023-04-09',
+        attribution: 'seismicity_1990_M4',
         zoomControl: true, // 是否秀出 - + 按鈕
         zIndex: 2000,
     })
@@ -249,7 +249,7 @@ onMounted(() => {
         >
 
         <label class="container"
-            ><input type="checkbox" @click="Cevent" /><span class="checkmark"></span>Event(2022-01-03~2023-04-09)</label
+            ><input type="checkbox" @click="Cevent" /><span class="checkmark"></span>seismicity_1990_M4</label
         >
     </div>
 </template>

@@ -1,11 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue'
-import hellow from '@/components/HelloWorld.vue'
 import ep3 from '@/components/EP3.vue'
 import ep3emit from '@/components/EP3_emit.vue'
-import tile from '@/components/tile.vue' //src目錄下
 import ep4 from '@/components/EP4.vue'
-import vuelogo from '@/assets/vue.svg'
+import hellow from '@/components/HelloWorld.vue'
+import tile from '@/components/tile.vue' //src目錄下
+import { computed, ref } from 'vue'
 
 const ischang = ref(0)
 const components = computed(() => {

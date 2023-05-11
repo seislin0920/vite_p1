@@ -6,6 +6,13 @@
     left: 0;
     right: 20%;
 }
+.dialog {
+    position: absolute;
+    z-index: 1500; /*需大於mapContainer才能顯現在最上層*/
+    bottom: 10%;
+    right: 5%;
+}
+
 .checkbox {
     position: absolute;
     z-index: 1500; /*需大於mapContainer才能顯現在最上層*/

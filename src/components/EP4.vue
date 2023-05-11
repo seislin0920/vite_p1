@@ -15,6 +15,7 @@ watch(num, (newnum) => {
 <template>
     <div>
         <input type="text" v-model.trim="num" />
+        <!-- .trim 自動修剪用戶輸入的空白 -->
         {{ num }}
         <!-- <button @click="setname">Change_name</button> -->
     </div>

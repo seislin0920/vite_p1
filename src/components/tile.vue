@@ -7,36 +7,17 @@ import 'leaflet/dist/leaflet.css'
 import { onMounted, ref } from 'vue'
 
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
-// import checkbox from '@/components/checkbox.vue'
+import { useDialog } from '@/stores/dialog.js'
+import { usePAlert } from '@/stores/station.js'
+import { storeToRefs } from 'pinia'
+
+const { dialogState } = storeToRefs(useDialog())
+const { stations } = usePAlert()
+// const {catchstation, stpussh} = storeToRefs(usePAlert())
 
 const mapContainer = ref(null)
 const customOptions = {
     minWidth: '150',
-}
-//Stations(P-Alert)讀取與篩選
-let tmpData = []
-$.ajax({
-    url: 'src/components/statics/20230321014519_PGA.txt',
-    method: 'Get', //request method
-    dataType: 'text', //不設定會自動判斷
-    async: false, //async 同步請求
-    success: (result) => {
-        let tmp = result.split('\n') // \n 換行
-        tmp.forEach((row) => {
-            if (row != '') {
-                let col = row.trim().split(/\s+/)
-                tmpData.push(col)
-            }
-        })
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-        // console.error(jqXHR, textStatus, errorThrown);
-        console.error(jqXHR, textStatus, errorThrown)
-    },
-})
-let stations = []
-for (var i = 1; i < tmpData.length; i++) {
-    stations.push(tmpData[i])
 }
 
 let CG = () => ({})
@@ -251,6 +232,12 @@ onMounted(() => {
         <label class="container"
             ><input type="checkbox" @click="Cevent" /><span class="checkmark"></span>seismicity_1990_M4</label
         >
+    </div>
+    <div class="dialog">
+        <GDialog v-model="dialogState">
+            <span class="text-black"> Coming soon ~ </span>
+        </GDialog>
+        <button class="btn btn--primary" @click="dialogState = true">Open Dialog</button>
     </div>
 </template>
 

@@ -27,25 +27,42 @@ export const usePAlert = defineStore('paler', () => {
             console.error(jqXHR, textStatus, errorThrown)
         },
     })
-    let stations = ref([])
+    let Pstations = ref([])
 
-    for (var i = 1; i < tmpData.value.length; i++) {
-        stations.value.push(tmpData.value[i])
+    for (let i = 1; i < tmpData.value.length; i++) {
+        Pstations.value.push(tmpData.value[i])
     }
 
-    return { tmpData, stations }
+    return { tmpData, Pstations }
 })
 
 export const useBATS = defineStore('BATS', () => {
-    const list = ref([])
+    const batsdata = ref([])
+    const tmp2 = ref([])
+    const Cstations = ref([])
 
-    try {
-        const res = axios.get('src/components/statics/BATS_stalist.txt')
-        let tmp2 = res.data.split('\n')
-        tmp2.map
-    } catch (error) {
-        //error
-    }
+    axios
+        .get('src/components/statics/BATS_stalist.txt')
+        .then((res) => {
+            batsdata.value = res.data.split('\n')
+            tmp2.value = batsdata.value.map((meta) => {
+                return meta.trim().split(/\s+/)
+            })
+            tmp2.value.shift() //去除title
+            Cstations.value = tmp2.value.map(([stationId, latitude, longitude, elevation]) => {
+                return {
+                    stationId,
+                    latitude,
+                    longitude,
+                    elevation,
+                }
+            })
+        })
+        .catch((err) => {
+            console.error(err)
+        })
 
-    return {}
+    //等待axios.get()返回的Promise才能給batsdata,否則回傳const batsdata = ref([])
+
+    return { batsdata, tmp2, Cstations }
 })

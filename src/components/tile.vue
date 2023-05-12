@@ -8,12 +8,14 @@ import { onMounted, ref } from 'vue'
 
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
 import { useDialog } from '@/stores/dialog.js'
-import { usePAlert } from '@/stores/station.js'
+import { useBATS, usePAlert } from '@/stores/station.js'
 import { storeToRefs } from 'pinia'
+import { computed, watch } from 'vue'
 
 const { dialogState } = storeToRefs(useDialog())
-const { stations } = usePAlert()
-// const {catchstation, stpussh} = storeToRefs(usePAlert())
+const { Pstations } = usePAlert() //function?
+const BATS = useBATS()
+const Cst = computed(() => BATS.Cstations)
 
 const mapContainer = ref(null)
 const customOptions = {
@@ -78,7 +80,7 @@ onMounted(() => {
 
     let config = {
         color: pgaScale,
-        title: 'PGA',
+        title: 'PGA(gal)',
         width: 250,
         tickValues: pgaScale.domain(),
         vertical: true,
@@ -134,27 +136,58 @@ onMounted(() => {
     // //P-Alert測站樣式
     let markers = []
     const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
-    stations.forEach((location) => {
-        let pgargb = pgaco(location[5])
-        markers.push(
-            L.circle([location[1], location[2]], {
+    const pgastation = (staionpp) => {
+        staionpp.map((location) => {
+            let pgargb = pgaco(location[5])
+            return markers = L.circle([location[1], location[2]], {
                 color: pgargb,
                 fillOpacity: 0,
                 radius: 1500,
             }).bindPopup(
                 `<b>${location[0]}</b>` +
-                    '<hr />' +
-                    'network: P-Alert' +
-                    '<br />' +
-                    'Latitude: ' +
-                    location[1] +
-                    '<br />' +
-                    'Longitude: ' +
-                    location[2]
+                '<hr />' +
+                'network: P-Alert' +
+                '<br />' +
+                'Latitude: ' +
+                location[1] +
+                '<br />' +
+                'Longitude: ' +
+                location[2]
             )
-        )
-    })
+
+        })
+    }
+    watch(Pstations, (inc) => { pgastation(Pstations) })
+
     const Sta = L.layerGroup(markers)
+
+    //BATS測站樣式
+    let bmarkers = []
+
+    const popstation = (staionpp) => {
+        bmarkers = staionpp.map((row) => {
+            return L.circle([row.latitude, row.longitude], {
+                color: '#3388ff',
+                fillOpacity: 0,
+                radius: 1500,
+            }).bindPopup(
+                `<b>${row.stationId}</b>` +
+                '<hr />' +
+                'network: BATS' +
+                '<br />' +
+                'Latitude: ' +
+                row.latitude +
+                '<br />' +
+                'Longitude: ' +
+                row.longitude
+            )
+        })
+
+    }
+    watch(Cst, (inc) => { popstation(Cst.value); L.layerGroup(bmarkers).addTo(map) })
+    console.log(bmarkers)
+
+
 
     //地震事件
     const events = L.tileLayer('http://140.109.82.44/assets/seismicity_1990_M4/{z}/{x}/{y}.png', {
@@ -184,7 +217,6 @@ onMounted(() => {
     }
     const overlayMaps = {
         Geology: tw_geology,
-        // 'P-Alert_stalist': Sta,
         'Event(2022-01-03~2023-04-09)': events,
         CWB_intensity: cwb_int,
         'P-Alert': pa_int,
@@ -217,21 +249,16 @@ onMounted(() => {
     <div class="checkbox">
         <label class="container"> <input type="checkbox" @click="CG" /><span class="checkmark"></span>Geology</label>
 
-        <label class="container"
-            ><input type="checkbox" @click="CCI" /><span class="checkmark"></span>CWB_Intensity</label
-        >
+        <label class="container"><input type="checkbox" @click="CCI" /><span class="checkmark"></span>CWB_Intensity</label>
 
-        <label class="container"
-            ><input type="checkbox" @click="CPAI" /><span class="checkmark"></span>P-Alert_Intensity</label
-        >
+        <label class="container"><input type="checkbox" @click="CPAI" /><span
+                class="checkmark"></span>P-Alert_Intensity</label>
 
-        <label class="container"
-            ><input type="checkbox" @click="CPAS" /><span class="checkmark"></span>P-Alert_stalist</label
-        >
+        <label class="container"><input type="checkbox" @click="CPAS" /><span
+                class="checkmark"></span>P-Alert_stalist</label>
 
-        <label class="container"
-            ><input type="checkbox" @click="Cevent" /><span class="checkmark"></span>seismicity_1990_M4</label
-        >
+        <label class="container"><input type="checkbox" @click="Cevent" /><span
+                class="checkmark"></span>seismicity_1990_M4</label>
     </div>
     <div class="dialog">
         <GDialog v-model="dialogState">

@@ -13,7 +13,8 @@ import { storeToRefs } from 'pinia'
 import { computed, watch } from 'vue'
 
 const { dialogState } = storeToRefs(useDialog())
-const { Pstations } = usePAlert() //function?
+const { Pstations } = storeToRefs(usePAlert()) //function?
+const { Cstations } = storeToRefs(useBATS())
 const BATS = useBATS()
 const Cst = computed(() => BATS.Cstations)
 
@@ -27,7 +28,8 @@ let CCI = () => ({})
 let CPAI = () => ({})
 let CPAS = () => ({})
 let Cevent = () => ({})
-
+let Bst = () => ({})
+let opacity = ref(0.5)
 //Leaflet
 onMounted(() => {
     const map = L.map(mapContainer.value, {
@@ -40,6 +42,7 @@ onMounted(() => {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>', // 商用時必須要有版權出處
         zoomControl: true, // 是否秀出 - + 按鈕
     }).addTo(map)
+
     //比例尺
     L.control
         .scale({
@@ -101,7 +104,7 @@ onMounted(() => {
         minZoom: 6,
         attribution: 'tw_geology',
         zoomControl: true, // 是否秀出 - + 按鈕
-        opacity: 0.8,
+        opacity: opacity.value,
         zIndex: 2000,
     })
 
@@ -111,13 +114,13 @@ onMounted(() => {
         [26.029563, 123.12703],
         [20.867285, 118.726656],
     ]
-    let cwb_over = [
-        L.imageOverlay(cwb, cwb_st, {
-            opacity: 0.8,
-            interactive: true, //mouse event 可觸發
-        }),
-    ]
-    const cwb_int = L.layerGroup(cwb_over)
+    let cwb_over = L.imageOverlay(cwb, cwb_st, {
+        opacity: opacity.value,
+        interactive: true, //mouse event 可觸發
+    })
+    const cwb_int = L.layerGroup([cwb_over])
+
+
 
     //P-Alert震度圖
     let pa = 'http://140.109.82.44/assets/Data/2023/2023.080.01.45.19/Int/palert/20230321014519_contour.png'
@@ -125,45 +128,37 @@ onMounted(() => {
         [25.303, 122.003],
         [21.890895, 120.048],
     ]
-    let pa_over = [
-        L.imageOverlay(pa, pa_st, {
-            opacity: 0.9,
-            interactive: true, //mouse event 可觸發
-        }),
-    ]
-    const pa_int = L.layerGroup(pa_over)
-
+    let pa_over = L.imageOverlay(pa, pa_st, {
+        opacity: opacity.value,
+        interactive: true, //mouse event 可觸發
+    })
+    const pa_int = L.layerGroup([pa_over])
     // //P-Alert測站樣式
-    let markers = []
+    let pmarkers = []
     const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
-    const pgastation = (staionpp) => {
-        staionpp.map((location) => {
-            let pgargb = pgaco(location[5])
-            return markers = L.circle([location[1], location[2]], {
-                color: pgargb,
-                fillOpacity: 0,
-                radius: 1500,
-            }).bindPopup(
-                `<b>${location[0]}</b>` +
-                '<hr />' +
-                'network: P-Alert' +
-                '<br />' +
-                'Latitude: ' +
-                location[1] +
-                '<br />' +
-                'Longitude: ' +
-                location[2]
-            )
+    pmarkers = Pstations.value.map((location) => {
+        let pgargb = pgaco(location[5])
+        return L.circle([location[1], location[2]], {
+            color: pgargb,
+            fillOpacity: 0,
+            radius: 1500,
+        }).bindPopup(
+            `<b>${location[0]}</b>` +
+            '<hr />' +
+            'network: P-Alert' +
+            '<br />' +
+            'Latitude: ' +
+            location[1] +
+            '<br />' +
+            'Longitude: ' +
+            location[2]
+        )
 
-        })
-    }
-    watch(Pstations, (inc) => { pgastation(Pstations) })
-
-    const Sta = L.layerGroup(markers)
+    });
+    const Sta = L.layerGroup(pmarkers)
 
     //BATS測站樣式
     let bmarkers = []
-
     const popstation = (staionpp) => {
         bmarkers = staionpp.map((row) => {
             return L.circle([row.latitude, row.longitude], {
@@ -181,11 +176,14 @@ onMounted(() => {
                 'Longitude: ' +
                 row.longitude
             )
-        })
-
+        });
+        const Csta = L.layerGroup(bmarkers);
+        Bst = (e) => {
+            e.target.checked ? Csta.addTo(map) : Csta.remove(map)
+        }
     }
-    watch(Cst, (inc) => { popstation(Cst.value); L.layerGroup(bmarkers).addTo(map) })
-    console.log(bmarkers)
+    watch(Cstations, () => { popstation(Cstations.value) })
+
 
 
 
@@ -210,18 +208,21 @@ onMounted(() => {
         }
     ).bringToBack()
 
+    //opacity透明度
+    watch(opacity, (newopacity) => {
+        console.log(newopacity);
+        cwb_over.setOpacity(newopacity);
+        tw_geology.setOpacity(newopacity);
+        pa_over.setOpacity(newopacity);
+    })
+
     //切換
     const changeLayer = {
         OpenStreetMap: osm,
         WorldImagery: esri,
     }
-    const overlayMaps = {
-        Geology: tw_geology,
-        'Event(2022-01-03~2023-04-09)': events,
-        CWB_intensity: cwb_int,
-        'P-Alert': pa_int,
-    }
     L.control.layers(changeLayer).addTo(map)
+
 
     CG = (e) => {
         e.target.checked ? tw_geology.addTo(map) : tw_geology.remove(map)
@@ -251,6 +252,8 @@ onMounted(() => {
 
         <label class="container"><input type="checkbox" @click="CCI" /><span class="checkmark"></span>CWB_Intensity</label>
 
+        <label class="container"><input type="checkbox" @click="Bst" /><span class="checkmark"></span>BATS</label>
+
         <label class="container"><input type="checkbox" @click="CPAI" /><span
                 class="checkmark"></span>P-Alert_Intensity</label>
 
@@ -259,6 +262,8 @@ onMounted(() => {
 
         <label class="container"><input type="checkbox" @click="Cevent" /><span
                 class="checkmark"></span>seismicity_1990_M4</label>
+
+        <label class="opacityrange"><input type="range" v-model="opacity" min="0" max="1" step="0.1" />Opacity</label>
     </div>
     <div class="dialog">
         <GDialog v-model="dialogState">

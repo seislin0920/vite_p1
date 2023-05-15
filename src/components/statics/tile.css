@@ -20,6 +20,13 @@
     right: 5%;
 }
 
+.pacityrange {
+    position: absolute;
+    z-index: 1500; /*需大於mapContainer才能顯現在最上層*/
+    top: 10%;
+    right: 5%;
+}
+
 .legend {
     position: absolute;
     z-index: 1500; /*需大於mapContainer才能顯現在最上層*/

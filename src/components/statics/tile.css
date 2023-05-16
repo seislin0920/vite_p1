@@ -134,3 +134,42 @@
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
+
+/* opacity range */
+.opacityrange,
+.opacityrange::-webkit-slider-runnable-track,
+.opacityrange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+}
+/* input range 主體樣式 */
+.opacityrange {
+    height: 80px;
+    width: 200px;
+    overflow: hidden;
+    cursor: pointer; /* 滑鼠放上會改變鼠標樣式 */
+    outline: none; /* 取消底線效果 */
+    /* background-color: white; 為了解釋方便所設定  */
+    /* background-color: grey; */ /* 我的目標樣式 */
+    margin: 0 10px 0;
+    /* border-style: ridge; /*邊框 */
+    /* border-color: #000000;
+    border-radius: 10px; */
+}
+/* 滑動軌道 樣式 */
+.opacityrange::-webkit-slider-runnable-track {
+    height: 6px;
+    width: 150px;
+    border-radius: 4px;
+    background: #aaa;
+}
+/* 滑動鈕 樣式 */
+.opacityrange::-webkit-slider-thumb {
+    position: relative;
+    height: 16px;
+    width: 16px;
+    margin-top: -5px; /* 會受到寬高影響定位，需微調 */
+    background-color: tomato; /* 為了解釋方便所設定 */
+    /* background-color: white; */ /* 我的目標樣式 */
+    border-radius: 50%;
+    border: 1px solid black;
+}

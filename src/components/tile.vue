@@ -151,7 +151,9 @@ onMounted(() => {
             location[1] +
             '<br />' +
             'Longitude: ' +
-            location[2]
+            location[2] +
+            '<br />'
+
         )
 
     });
@@ -262,8 +264,9 @@ onMounted(() => {
 
         <label class="container"><input type="checkbox" @click="Cevent" /><span
                 class="checkmark"></span>seismicity_1990_M4</label>
-
-        <label class="opacityrange"><input type="range" v-model="opacity" min="0" max="1" step="0.1" />Opacity</label>
+        <input class="opacityrange" type="range" v-model="opacity" min="0" max="1" step="0.1" />
+        <br />
+        <label>Opacity:{{ opacity }}</label>
     </div>
     <div class="dialog">
         <GDialog v-model="dialogState">

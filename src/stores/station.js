@@ -3,7 +3,7 @@ import $ from 'jquery'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const usePAlert = defineStore('paler', () => {
+export const usePAlert = defineStore('palert', () => {
     //Stations(P-Alert)讀取與篩選
     let tmpData = ref([])
     $.ajax({

@@ -1,4 +1,7 @@
 <script setup>
+import 'bootstrap'
+import 'd3'
+import { GDialog } from 'gitart-vue-dialog'
 import $ from 'jquery'
 import L from 'leaflet'
 import 'leaflet-draw/dist/leaflet.draw'
@@ -7,8 +10,11 @@ import 'leaflet/dist/leaflet.css'
 import { onMounted, ref } from 'vue'
 
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
+import { sacPlots } from '@/components/statics/sacPlot/newSacPlot.js'
 import { useDialog } from '@/stores/dialog.js'
 import { useBATS, usePAlert } from '@/stores/station.js'
+import { usebatsevent } from '@/stores/batsevent.js'
+
 import { storeToRefs } from 'pinia'
 import { computed, watch } from 'vue'
 
@@ -17,6 +23,7 @@ const { Pstations } = storeToRefs(usePAlert()) //function?
 const { Cstations } = storeToRefs(useBATS())
 const BATS = useBATS()
 const Cst = computed(() => BATS.Cstations)
+const { events } = storeToRefs(usebatsevent())
 
 const mapContainer = ref(null)
 const customOptions = {
@@ -30,6 +37,8 @@ let CPAS = () => ({})
 let Cevent = () => ({})
 let Bst = () => ({})
 let opacity = ref(0.5)
+
+
 //Leaflet
 onMounted(() => {
     const map = L.map(mapContainer.value, {
@@ -163,12 +172,15 @@ onMounted(() => {
     let bmarkers = []
     const popstation = (staionpp) => {
         bmarkers = staionpp.map((row) => {
-            return L.circle([row.latitude, row.longitude], {
-                color: '#3388ff',
-                fillOpacity: 0,
-                radius: 1500,
-            }).bindPopup(
-                `<b>${row.stationId}</b>` +
+
+            // paths.network = 'BATS';
+            // let chart = sacPlots().data(paths);
+            // console.log(paths);
+
+            //popup及波型按鈕
+            let div = document.createElement("div")
+            div.insertAdjacentHTML(
+                "beforeend", `<b>${row.stationId}</b>` +
                 '<hr />' +
                 'network: BATS' +
                 '<br />' +
@@ -176,9 +188,26 @@ onMounted(() => {
                 row.latitude +
                 '<br />' +
                 'Longitude: ' +
-                row.longitude
-            )
+                row.longitude +
+                '<br />' +
+            `<button >波形</button>`)
+            let button = div.querySelector("button")
+            button.onclick = () => {
+                dialogState.value = true;
+                // chart();
+            }
+
+            let circle = L.circle([row.latitude, row.longitude], {
+                color: '#3388ff',
+                fillOpacity: 0,
+                radius: 1500,
+            }).bindPopup(div)
+
+            return circle;
         });
+
+
+
         const Csta = L.layerGroup(bmarkers);
         Bst = (e) => {
             e.target.checked ? Csta.addTo(map) : Csta.remove(map)
@@ -269,11 +298,17 @@ onMounted(() => {
         <label>Opacity:{{ opacity }}</label>
     </div>
     <div class="dialog">
-        <GDialog v-model="dialogState">
+        <GDialog v-model="dialogState" fullscreen>
             <span class="text-black"> Coming soon ~ </span>
+            <div class="actions">
+                <button class="btn-outline" @click="dialogState = false">
+                    Close
+                </button>
+            </div>
         </GDialog>
-        <button class="btn btn--primary" @click="dialogState = true">Open Dialog</button>
     </div>
+    <p>{{ events }}</p>
 </template>
 
 <style lang="css" scoped src="@/components/statics/tile.css"></style>
+<style lang="css" scoped src="@/components/statics/sacPlot/sacPlot.css"></style>

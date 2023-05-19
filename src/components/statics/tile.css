@@ -6,12 +6,6 @@
     left: 0;
     right: 20%;
 }
-.dialog {
-    position: absolute;
-    z-index: 1500; /*需大於mapContainer才能顯現在最上層*/
-    bottom: 10%;
-    right: 5%;
-}
 
 .checkbox {
     position: absolute;
@@ -172,4 +166,12 @@
     /* background-color: white; */ /* 我的目標樣式 */
     border-radius: 50%;
     border: 1px solid black;
+}
+/* dialog */
+
+.dialog {
+    position: absolute;
+    z-index: 1500; /*需大於mapContainer才能顯現在最上層*/
+    bottom: 10%;
+    right: 5%;
 }

@@ -10,10 +10,9 @@ import 'leaflet/dist/leaflet.css'
 import { onMounted, ref } from 'vue'
 
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
-import { sacPlots } from '@/components/statics/sacPlot/newSacPlot.js'
+import { useBatsevent } from '@/stores/batsevent.js'
 import { useDialog } from '@/stores/dialog.js'
 import { useBATS, usePAlert } from '@/stores/station.js'
-import { usebatsevent } from '@/stores/batsevent.js'
 
 import { storeToRefs } from 'pinia'
 import { computed, watch } from 'vue'
@@ -23,7 +22,8 @@ const { Pstations } = storeToRefs(usePAlert()) //function?
 const { Cstations } = storeToRefs(useBATS())
 const BATS = useBATS()
 const Cst = computed(() => BATS.Cstations)
-const { events } = storeToRefs(usebatsevent())
+const { paths, bevents } = storeToRefs(useBatsevent())
+// const { bevents } = useBatsevent()
 
 const mapContainer = ref(null)
 const customOptions = {
@@ -271,6 +271,10 @@ onMounted(() => {
         e.target.checked ? events.addTo(map) : events.remove(map)
     }
 })
+watch(bevents, () => {
+    console.log(bevents.value);
+})
+
 </script>
 
 <template>
@@ -307,7 +311,6 @@ onMounted(() => {
             </div>
         </GDialog>
     </div>
-    <p>{{ events }}</p>
 </template>
 
 <style lang="css" scoped src="@/components/statics/tile.css"></style>

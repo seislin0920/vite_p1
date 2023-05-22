@@ -1,35 +1,39 @@
 import axios from 'axios'
 import { defineStore, storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import { useBATS } from '@/stores/station.js'
-const { Cstations } = storeToRefs(useBATS())
 
-export const usebatsevent = defineStore('batsevent', () => {
+export const useBatsevent = defineStore('batsevent', () => {
     //waveform
-    let local = ref('http://140.109.82.44/assets/Data/2023/2023.080.01.45.19/data/')
+    let local = ref('http://140.109.82.44/assets/Data/2023/2023.080.01.45.19/data/') //http://140.109.82.44/assets/Data/2023/2023.080.01.45.19/data & src/components/statics/data/
     let evtime = ref('.D.2023,080,01:44:59.xy')
+    let channels = ref(['HHE', 'HHN', 'HHZ'])
+    let bevents = ref([])
+    let paths = ref([])
 
-    events = ref([])
-    events = Cstations.value.map((row) => {
-        let channels = ['HHE', 'HHN', 'HHZ']
-        let paths = channels.map((cha) => {
-            return local.value + 'TW.' + row.stationId + '..' + cha + evtime.value
+    const { Cstations } = storeToRefs(useBATS())
+    const getstationId = async (id) => {
+        await id.map((row) => {
+            paths.value = channels.value.map((cha) => {
+                // bevents.value = { stationId: row.stationId }
+                axios({
+                    method: 'get',
+                    url: local.value + 'TW.' + row.stationId + '..' + cha + evtime.value,
+                })
+                    // .get(local.value + 'TW.' + row.stationId + '..' + cha + evtime.value)
+                    .then((res) => {
+                        // console.log(res.data)
+                        return (bevents.value = { stationId: row.stationId, channel: cha, data: res.data })
+                    })
+                    .catch((err) => {
+                        // console.error(err)
+                    })
+            })
         })
-
-        let batsevent = ref([])
-        axios
-            .get(paths)
-            .then((res) => {
-                console.log(res.data)
-            })
-            .catch((err) => {
-                console.error(err)
-            })
-        return console.log(res.data)
+    }
+    watch(Cstations, async () => {
+        await getstationId(Cstations.value)
     })
-
-    //等待axios.get()返回的Promise才能給batsdata,否則回傳const batsdata = ref([])
-
-    return { events }
+    return { paths, bevents }
 })

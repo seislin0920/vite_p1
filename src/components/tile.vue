@@ -1,7 +1,6 @@
 <script setup>
 import 'bootstrap'
 import 'd3'
-import { GDialog } from 'gitart-vue-dialog'
 import $ from 'jquery'
 import L from 'leaflet'
 import 'leaflet-draw/dist/leaflet.draw'
@@ -9,21 +8,23 @@ import 'leaflet-draw/dist/leaflet.draw.css'
 import 'leaflet/dist/leaflet.css'
 import { onMounted, ref } from 'vue'
 
+import dialogUI from '@/components/dialogUI.vue'
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
-import { useBatsevent } from '@/stores/batsevent.js'
+import { useBatsevent } from '@/stores/batsEvent.js'
+import { useBATS } from '@/stores/batsStation.js'
 import { useDialog } from '@/stores/dialog.js'
-import { useBATS, usePAlert } from '@/stores/station.js'
+import { usePAlert } from '@/stores/pStation.js'
 
 import { storeToRefs } from 'pinia'
-import { computed, watch } from 'vue'
+import { watch } from 'vue'
 
 const { dialogState } = storeToRefs(useDialog())
-const { Pstations } = storeToRefs(usePAlert()) //function?
+const { Pstations } = storeToRefs(usePAlert())
 const { Cstations } = storeToRefs(useBATS())
-const BATS = useBATS()
-const Cst = computed(() => BATS.Cstations)
-const { paths, bevents } = storeToRefs(useBatsevent())
-// const { bevents } = useBatsevent()
+// const BATS = useBATS()
+// const Cst = computed(() => BATS.Cstations)
+const { waveform, userdata } = storeToRefs(useBatsevent())
+const { getWaveformData } = useBatsevent()
 
 const mapContainer = ref(null)
 const customOptions = {
@@ -78,14 +79,14 @@ onMounted(() => {
     map.addControl(drawControl)
 
     //地圖監聽事件
-    const popup = L.popup()
-    map.on('click', (e) => {
-        popup
-            .setLatLng(e.latlng)
-            .setContent('You clicked the map at ' + e.latlng.toString() + '.')
-            //toString陣列中的每個元素用逗號串接起來成為一個字串，並回傳該字串
-            .openOn(map)
-    })
+    // const popup = L.popup()
+    // map.on('click', (e) => {
+    //     popup
+    //         .setLatLng(e.latlng)
+    //         .setContent('You clicked the map at ' + e.latlng.toString() + '.')
+    //         //toString陣列中的每個元素用逗號串接起來成為一個字串，並回傳該字串
+    //         .openOn(map)
+    // })
 
     //PGA_scale
     let pgaScale = getPgaScale()
@@ -142,9 +143,10 @@ onMounted(() => {
         interactive: true, //mouse event 可觸發
     })
     const pa_int = L.layerGroup([pa_over])
+
     // //P-Alert測站樣式
-    let pmarkers = []
     const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
+    let pmarkers = []
     pmarkers = Pstations.value.map((location) => {
         let pgargb = pgaco(location[5])
         return L.circle([location[1], location[2]], {
@@ -168,54 +170,47 @@ onMounted(() => {
     });
     const Sta = L.layerGroup(pmarkers)
 
+
     //BATS測站樣式
     let bmarkers = []
-    const popstation = (staionpp) => {
-        bmarkers = staionpp.map((row) => {
-
-            // paths.network = 'BATS';
-            // let chart = sacPlots().data(paths);
-            // console.log(paths);
-
-            //popup及波型按鈕
-            let div = document.createElement("div")
-            div.insertAdjacentHTML(
-                "beforeend", `<b>${row.stationId}</b>` +
-                '<hr />' +
-                'network: BATS' +
-                '<br />' +
-                'Latitude: ' +
-                row.latitude +
-                '<br />' +
-                'Longitude: ' +
-                row.longitude +
-                '<br />' +
-            `<button >波形</button>`)
-            let button = div.querySelector("button")
-            button.onclick = () => {
-                dialogState.value = true;
-                // chart();
-            }
-
-            let circle = L.circle([row.latitude, row.longitude], {
-                color: '#3388ff',
-                fillOpacity: 0,
-                radius: 1500,
-            }).bindPopup(div)
-
-            return circle;
-        });
-
-
-
-        const Csta = L.layerGroup(bmarkers);
-        Bst = (e) => {
-            e.target.checked ? Csta.addTo(map) : Csta.remove(map)
+    bmarkers = Cstations.value.map((row) => {
+        //popup及波型按鈕
+        let div = document.createElement("div")
+        div.insertAdjacentHTML(
+            "beforeend", `<b>${row.stationId}</b>` +
+            '<hr />' +
+            'network: BATS' +
+            '<br />' +
+            'Latitude: ' +
+            row.latitude +
+            '<br />' +
+            'Longitude: ' +
+            row.longitude +
+            '<br />' +
+        `<button >波形</button>`)
+        let button = div.querySelector("button")
+        button.onclick = () => {
+            dialogState.value = true;
+            userdata.value = { station: row.stationId }
+            // console.log(waveform.value);
+            // chart();
         }
+
+        let circle = L.circle([row.latitude, row.longitude], {
+            color: '#3388ff',
+            fillOpacity: 0,
+            radius: 1500,
+        }).bindPopup(div)
+
+        return circle;
+    });
+
+
+
+    const Csta = L.layerGroup(bmarkers);
+    Bst = (e) => {
+        e.target.checked ? Csta.addTo(map) : Csta.remove(map)
     }
-    watch(Cstations, () => { popstation(Cstations.value) })
-
-
 
 
     //地震事件
@@ -241,7 +236,7 @@ onMounted(() => {
 
     //opacity透明度
     watch(opacity, (newopacity) => {
-        console.log(newopacity);
+        // console.log(newopacity);
         cwb_over.setOpacity(newopacity);
         tw_geology.setOpacity(newopacity);
         pa_over.setOpacity(newopacity);
@@ -271,9 +266,7 @@ onMounted(() => {
         e.target.checked ? events.addTo(map) : events.remove(map)
     }
 })
-watch(bevents, () => {
-    console.log(bevents.value);
-})
+
 
 </script>
 
@@ -302,14 +295,7 @@ watch(bevents, () => {
         <label>Opacity:{{ opacity }}</label>
     </div>
     <div class="dialog">
-        <GDialog v-model="dialogState" fullscreen>
-            <span class="text-black"> Coming soon ~ </span>
-            <div class="actions">
-                <button class="btn-outline" @click="dialogState = false">
-                    Close
-                </button>
-            </div>
-        </GDialog>
+        <dialogUI></dialogUI>
     </div>
 </template>
 

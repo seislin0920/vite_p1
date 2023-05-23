@@ -1,4 +1,3 @@
-import axios from 'axios'
 import $ from 'jquery'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -33,36 +32,6 @@ export const usePAlert = defineStore('palert', () => {
         Pstations.value.push(tmpData.value[i])
     }
 
+    // console.log(Pstations.value)
     return { tmpData, Pstations }
-})
-
-export const useBATS = defineStore('BATS', () => {
-    const batsdata = ref([])
-    const tmp2 = ref([])
-    const Cstations = ref([])
-
-    axios
-        .get('src/components/statics/BATS_stalist.txt')
-        .then((res) => {
-            batsdata.value = res.data.split('\n')
-            tmp2.value = batsdata.value.map((meta) => {
-                return meta.trim().split(/\s+/)
-            })
-            tmp2.value.shift() //去除title
-            Cstations.value = tmp2.value.map(([stationId, latitude, longitude, elevation]) => {
-                return {
-                    stationId,
-                    latitude,
-                    longitude,
-                    elevation,
-                }
-            })
-        })
-        .catch((err) => {
-            console.error(err)
-        })
-
-    //等待axios.get()返回的Promise才能給batsdata,否則回傳const batsdata = ref([])
-
-    return { batsdata, tmp2, Cstations }
 })

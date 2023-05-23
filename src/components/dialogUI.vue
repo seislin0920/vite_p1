@@ -1,46 +1,49 @@
 <script setup lang="ts">
-import { GDialog } from 'gitart-vue-dialog'
-import 'gitart-vue-dialog/dist/style.css'
+import { sacPlots } from '@/components/statics/sacPlot/newSacPlot.js';
+import { useBatsevent } from '@/stores/batsEvent.js';
+import { useDialog } from '@/stores/dialog.js';
+import { GDialog } from 'gitart-vue-dialog';
+import 'gitart-vue-dialog/dist/style.css';
+import { storeToRefs } from 'pinia';
+import { onMounted, watch } from 'vue';
+
+const { dialogState } = storeToRefs(useDialog())
+const { waveform, userdata } = storeToRefs(useBatsevent())
+const { getWaveformData } = useBatsevent()
+
+onMounted(() => {
+    watch(dialogState, (open) => {
+        if (open) {
+            getWaveformData()
+        }
+    })
+
+    watch(waveform, (data) => {
+        console.log(data);
+        let chart = sacPlots().data(data);
+        console.log(document.querySelector(".graphics"));
+
+        document.querySelectorAll(".graphics>*").forEach(child => child.remove());
+        chart.selector(".graphics");
+        chart();
+    });
+})
 </script>
 
 <template>
-    <GDialog v-model="dialogControls.openState" :max-width="dialogControls.maxWidth">
+    <GDialog v-model="dialogState" :max-width="'1000px'">
         <div class="wrapper">
             <div class="content">
                 <!-- x icon-->
-                <button type="button" class="close">
-                    <span aria-hidden="true" @click="dialogControls.openState = false">&times;</span>
+                <button type="button" class="close" @click="dialogState = false">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <div class="title">{{ $t(dialogControls.content.type) }}</div>
+                <div class="title">w</div>
                 <div class="graphics container d-flex align-items-center justify-content-center">
-                    <img v-if="fileData.length" :src="fileData[0].data" />
-                    <div v-show="waveforms.length" :id="dialogControls.content.type"></div>
+
+
                 </div>
-                <!-- download form-->
-                <form v-if="dialogControls.content.type === 'downloadForm'">
-                    <div class="mb-3">
-                        <label for="formEmail" class="form-label">{{ $t('downloadForm_email') }}</label>
-                        <input
-                            v-model="userLog.email"
-                            type="email"
-                            class="form-control"
-                            id="formEmail"
-                            placeholder="name@example.com"
-                        />
-                    </div>
-                    <div class="mb-3">
-                        <label for="formAffiliation" class="form-label">{{ $t('downloadForm_affiliation') }}</label>
-                        <input v-model="userLog.affiliation" type="text" class="form-control" id="formAffiliation" />
-                    </div>
-                    <button
-                        type="submit"
-                        class="btn btn-secondary me-2"
-                        @click="downloadSubmit()"
-                        :disabled="!userLog.email || !userLog.affiliation"
-                    >
-                        {{ $t('downloadSubmit') }}
-                    </button>
-                </form>
+
             </div>
         </div>
     </GDialog>
@@ -56,7 +59,7 @@ import 'gitart-vue-dialog/dist/style.css'
 }
 </style>
 
-<style lang="scss" scoped>
+<!-- <style lang="scss" scoped>
 .wrapper {
     color: #000;
 
@@ -100,12 +103,13 @@ import 'gitart-vue-dialog/dist/style.css'
         width: 100%;
     }
 }
-</style>
+</style> -->
 
 <!-- 圖表相關css -->
-<style lang="scss" scoped>
+<!-- <style lang="scss" scoped>
 /* tooltop,nav-menu...通用css */
 :deep(.graphics) {
+
     text,
     label,
     a,
@@ -299,4 +303,4 @@ import 'gitart-vue-dialog/dist/style.css'
         padding: 10px 15px;
     }
 }
-</style>
+</style> -->

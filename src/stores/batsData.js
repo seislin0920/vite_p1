@@ -59,7 +59,7 @@ export const useBATS = defineStore('batsevent', () => {
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // console.error(jqXHR, textStatus, errorThrown)
-                    console.error('no Dady')
+                    console.error('No Data')
                 },
             })
         })

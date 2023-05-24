@@ -1,29 +1,21 @@
 <script setup>
-import 'bootstrap'
-import 'd3'
 import $ from 'jquery'
 import L from 'leaflet'
 import 'leaflet-draw/dist/leaflet.draw'
 import 'leaflet-draw/dist/leaflet.draw.css'
 import 'leaflet/dist/leaflet.css'
-import { onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { onMounted, ref, watch } from 'vue'
 
 import dialogUI from '@/components/dialogUI.vue'
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
-// import { useBatsevent } from '@/stores/batsEvent.js'
-// import { useBATS } from '@/stores/batsStation.js'
+import { useBATS } from '@/stores/batsData.js'
 import { useDialog } from '@/stores/dialog.js'
 import { usePAlert } from '@/stores/pStation.js'
-import { useBATS } from '@/stores/batsData.js'
-
-import { storeToRefs } from 'pinia'
-import { watch } from 'vue'
 
 const { dialogState } = storeToRefs(useDialog())
 const { Pstations } = storeToRefs(usePAlert())
 const { Cstations } = storeToRefs(useBATS())
-// const BATS = useBATS()
-// const Cst = computed(() => BATS.Cstations)
 const { getWaveformData } = useBATS()
 
 const mapContainer = ref(null)
@@ -77,16 +69,6 @@ onMounted(() => {
         },
     })
     map.addControl(drawControl)
-
-    //地圖監聽事件
-    // const popup = L.popup()
-    // map.on('click', (e) => {
-    //     popup
-    //         .setLatLng(e.latlng)
-    //         .setContent('You clicked the map at ' + e.latlng.toString() + '.')
-    //         //toString陣列中的每個元素用逗號串接起來成為一個字串，並回傳該字串
-    //         .openOn(map)
-    // })
 
     //PGA_scale
     let pgaScale = getPgaScale()

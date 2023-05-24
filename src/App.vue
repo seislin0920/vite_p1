@@ -3,7 +3,8 @@ import ep3 from '@/components/EP3.vue'
 import ep3emit from '@/components/EP3_emit.vue'
 import ep4 from '@/components/EP4.vue'
 import hellow from '@/components/HelloWorld.vue'
-import tile from '@/components/tile.vue' //src目錄下
+import map from '@/components/map.vue'
+import tile from '@/components/tile.vue'; //src目錄下
 import { computed, ref } from 'vue'
 
 const ischang = ref(0)
@@ -19,6 +20,8 @@ const components = computed(() => {
             return tile
         case 4:
             return ep4
+        case 5:
+            return map
 
         default:
             return tile
@@ -43,6 +46,7 @@ const clallback = (res) => {
         <button @click="changecomponents(2)">ep3emit</button>
         <button @click="changecomponents(3)">tile</button>
         <button @click="changecomponents(4)">ep4</button>
+        <button @click="changecomponents(5)">map</button>
 
         <div>
             <component :is="components" />

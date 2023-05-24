@@ -1,14 +1,39 @@
 import $ from 'jquery'
-import { defineStore, storeToRefs } from 'pinia'
+import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import { useBATS } from '@/stores/batsStation.js'
+export const useBATS = defineStore('batsevent', () => {
+    //BATS_stalist
+    const Cstations = ref([])
+    $.ajax({
+        url: 'src/components/statics/BATS_stalist.txt',
+        method: 'Get', //request method
+        dataType: 'text', //不設定會自動判斷
+        async: false, //async 同步請求
+        success: (result) => {
+            let batsdata = result.split('\n')
+            let tmp2 = batsdata.map((meta) => {
+                return meta.trim().split(/\s+/)
+            })
+            tmp2.shift() //去除title
+            Cstations.value = tmp2.map(([stationId, latitude, longitude, elevation]) => {
+                return {
+                    stationId,
+                    latitude,
+                    longitude,
+                    elevation,
+                }
+            })
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error(jqXHR, textStatus, errorThrown)
+        },
+    })
+    //axios預設為異步,所以得用async await,但在defineStore又會出問題
 
-export const useBatsevent = defineStore('batsevent', () => {
+    //getWaveform
     // const userdata = ref({})
-    //waveform
     let waveform = ref({})
-    const { Cstations } = storeToRefs(useBATS())
     const getWaveformData = (station) => {
         let tmp = {}
         let channels = ['HHE', 'HHN', 'HHZ']
@@ -34,12 +59,12 @@ export const useBatsevent = defineStore('batsevent', () => {
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // console.error(jqXHR, textStatus, errorThrown)
-                    console.error('no data')
+                    console.error('no Dady')
                 },
             })
         })
 
         waveform.value = { staCode: station, waveform: tmp, event: '2023,080,01:44:59', network: 'BATS' }
     }
-    return { waveform, getWaveformData }
+    return { Cstations, waveform, getWaveformData }
 })

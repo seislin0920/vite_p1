@@ -10,10 +10,11 @@ import { onMounted, ref } from 'vue'
 
 import dialogUI from '@/components/dialogUI.vue'
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js'
-import { useBatsevent } from '@/stores/batsEvent.js'
-import { useBATS } from '@/stores/batsStation.js'
+// import { useBatsevent } from '@/stores/batsEvent.js'
+// import { useBATS } from '@/stores/batsStation.js'
 import { useDialog } from '@/stores/dialog.js'
 import { usePAlert } from '@/stores/pStation.js'
+import { useBATS } from '@/stores/batsData.js'
 
 import { storeToRefs } from 'pinia'
 import { watch } from 'vue'
@@ -23,8 +24,7 @@ const { Pstations } = storeToRefs(usePAlert())
 const { Cstations } = storeToRefs(useBATS())
 // const BATS = useBATS()
 // const Cst = computed(() => BATS.Cstations)
-const { waveform, userdata } = storeToRefs(useBatsevent())
-const { getWaveformData } = useBatsevent()
+const { getWaveformData } = useBATS()
 
 const mapContainer = ref(null)
 const customOptions = {
@@ -90,7 +90,6 @@ onMounted(() => {
 
     //PGA_scale
     let pgaScale = getPgaScale()
-
     let config = {
         color: pgaScale,
         title: 'PGA(gal)',
@@ -98,12 +97,10 @@ onMounted(() => {
         tickValues: pgaScale.domain(),
         vertical: true,
     }
-    // console.debug(d3.schemeRdBu[9]);
     let pgaLegend = $('div.legend>.pgaLegend')
     if (pgaLegend) pgaLegend.append(getColorLegend(config))
     //可移動
     let legendNodes = document.querySelectorAll('.legend>div')
-    // console.debug(legendNodes);
     legendNodes.forEach((legend, i) => {
         new L.Draggable(legend).enable()
     })
@@ -191,9 +188,8 @@ onMounted(() => {
         let button = div.querySelector("button")
         button.onclick = () => {
             dialogState.value = true;
-            userdata.value = { station: row.stationId }
-            // console.log(waveform.value);
-            // chart();
+            getWaveformData(row.stationId)
+            // userdata.value = { station: row.stationId }
         }
 
         let circle = L.circle([row.latitude, row.longitude], {
@@ -236,7 +232,6 @@ onMounted(() => {
 
     //opacity透明度
     watch(opacity, (newopacity) => {
-        // console.log(newopacity);
         cwb_over.setOpacity(newopacity);
         tw_geology.setOpacity(newopacity);
         pa_over.setOpacity(newopacity);

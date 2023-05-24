@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { sacPlots } from '@/components/statics/sacPlot/newSacPlot.js';
-import { useBatsevent } from '@/stores/batsEvent.js';
-import { useDialog } from '@/stores/dialog.js';
 import { GDialog } from 'gitart-vue-dialog';
 import 'gitart-vue-dialog/dist/style.css';
 import { storeToRefs } from 'pinia';
-import { onMounted, watch } from 'vue';
+import { nextTick, onMounted, watch } from 'vue';
+import { sacPlots } from '/home/linjay/vue_p/vite_p1/src/components/statics/sacPlot/newSacPlot.js';
+import { useBATS } from '/home/linjay/vue_p/vite_p1/src/stores/batsData.js';
+import { useDialog } from '/home/linjay/vue_p/vite_p1/src/stores/dialog.js';
 
 const { dialogState } = storeToRefs(useDialog())
-const { waveform, userdata } = storeToRefs(useBatsevent())
-const { getWaveformData } = useBatsevent()
+const { waveform } = storeToRefs(useBATS())
 
 onMounted(() => {
-    watch(dialogState, (open) => {
-        if (open) {
-            getWaveformData()
-        }
-    })
+    // watch(dialogState, (open) => {
+    //     if (open) {
+    //         getWaveformData()
+    //     }
+    // })
 
     watch(waveform, (data) => {
-        console.log(data);
         let chart = sacPlots().data(data);
-        console.log(document.querySelector(".graphics"));
-
         document.querySelectorAll(".graphics>*").forEach(child => child.remove());
-        chart.selector(".graphics");
-        chart();
+        // 使用 $nextTick 确保 .graphics 節點已经生成
+        nextTick(() => {
+            // console.log(document.querySelector('.graphics'));
+            chart.selector(".graphics");
+            chart();
+        });
     });
 })
 </script>
@@ -38,12 +38,8 @@ onMounted(() => {
                 <button type="button" class="close" @click="dialogState = false">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <div class="title">w</div>
-                <div class="graphics container d-flex align-items-center justify-content-center">
-
-
-                </div>
-
+                <div class="title">波形資料</div>
+                <div class="graphics container d-flex align-items-center justify-content-center"> </div>
             </div>
         </div>
     </GDialog>

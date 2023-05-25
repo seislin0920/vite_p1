@@ -18,12 +18,14 @@ onMounted(() => {
     // })
 
     watch(waveform, (data) => {
+        console.log(data);
+
         let chart = sacPlots().data(data);
-        document.querySelectorAll(".graphics>*").forEach(child => child.remove());
+        document.querySelectorAll(".graphics>div>*").forEach(child => child.remove());
         // 使用 $nextTick 确保 .graphics 節點已经生成
         nextTick(() => {
             // console.log(document.querySelector('.graphics'));
-            chart.selector(".graphics");
+            chart.selector(".graphics>div");
             chart();
         });
     });
@@ -39,7 +41,9 @@ onMounted(() => {
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <div class="title">波形資料</div>
-                <div class="graphics container d-flex align-items-center justify-content-center"> </div>
+                <div class="graphics container d-flex align-items-center justify-content-center">
+                    <div></div>
+                </div>
             </div>
         </div>
     </GDialog>
@@ -55,7 +59,7 @@ onMounted(() => {
 }
 </style>
 
-<!-- <style lang="scss" scoped>
+<style lang="scss" scoped>
 .wrapper {
     color: #000;
 
@@ -99,10 +103,10 @@ onMounted(() => {
         width: 100%;
     }
 }
-</style> -->
+</style>
 
 <!-- 圖表相關css -->
-<!-- <style lang="scss" scoped>
+<style lang="scss" scoped>
 /* tooltop,nav-menu...通用css */
 :deep(.graphics) {
 
@@ -114,7 +118,7 @@ onMounted(() => {
     }
 
     .toggle-menu {
-        position: absolute;
+        position: relative;
         right: 0;
 
         ul {
@@ -157,6 +161,8 @@ onMounted(() => {
             color: #777;
             font-size: 20px;
             text-decoration: none;
+            position: relative;
+            right: 10px;
 
             &:hover,
             &.show {
@@ -190,104 +196,6 @@ onMounted(() => {
     }
 }
 
-/* DistxWave css*/
-:deep(.graphics > #travelTimeCurve) {
-    --w: 150px;
-    --list-length: 4;
-    --sidePadding: 2px;
-
-    #NSRange {
-        width: var(--w);
-    }
-
-    #NSList {
-        display: block;
-        margin-top: -10px;
-
-        option {
-            display: inline-block;
-            width: calc((var(--w) - var(--sidePadding)) / ((var(--list-length) - 1)));
-            text-align: center;
-            text-anchor: middle;
-
-            /* alignment-baseline: text-before-edge; */
-            // font-weight: bold;
-
-            /* font-size: 100; */
-            &:first-child {
-                width: calc((var(--w) - var(--sidePadding)) / ((var(--list-length) - 1) * 2));
-                text-align: left;
-                padding-left: 3px;
-            }
-
-            &:last-child {
-                width: calc((var(--w) - var(--sidePadding)) / ((var(--list-length) - 1) * 2));
-                text-align: right;
-                padding-left: 12px;
-            }
-        }
-    }
-
-    #xAxisName_radioGroup {
-        input[name='xAxisRange'] {
-            max-width: 40%;
-        }
-
-        .dropdown-menu {
-            left: auto;
-            right: 0;
-            top: 100%;
-        }
-    }
-
-    .slider-handle {
-        --slider-handle-width: 16px;
-        width: var(--slider-handle-width);
-        height: var(--slider-handle-width);
-        margin-top: calc(10px - var(--slider-handle-width) * 0.5);
-    }
-
-    .slider-selection {
-        background: #0480be;
-    }
-
-    .slider-track {
-        border-color: #afafafb9;
-        border-style: solid;
-        border-width: 1px;
-    }
-
-    #displayMenu {
-        max-width: 220px;
-    }
-
-    #channelMenu {
-        max-width: 180px;
-    }
-
-    #chartMain {
-        position: relative;
-    }
-
-    #loading {
-        --loading-width: 150px;
-        --loading-height: 60px;
-
-        position: absolute;
-        width: var(--loading-width);
-        height: var(--loading-height);
-        left: calc(50% - var(--loading-width) * 0.5);
-        top: calc(50% - var(--loading-height));
-        z-index: 50;
-        padding: 10px 10px;
-        background: #3c3c3c;
-        color: #fff;
-        text-align: center;
-        box-shadow: 2px 2px 10px;
-        border-radius: 5px;
-    }
-}
-
 /* sacPlot css*/
 :deep(.graphics > #sacPlot) {
     .yAxis .domain {
@@ -299,4 +207,4 @@ onMounted(() => {
         padding: 10px 15px;
     }
 }
-</style> -->
+</style>

@@ -60,4 +60,3 @@ const clallback = (res) => {
     </header>
 </template>
 
-<style></style>

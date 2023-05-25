@@ -47,14 +47,16 @@ export const useBATS = defineStore('batsevent', () => {
                 dataType: 'text', //不設定會自動判斷
                 async: false, //async 同步請求
                 success: (res) => {
-                    let spiltxy = res.split('\n').map((lines) => {
-                        return lines.trim().split(/\s+/)
-                    })
-
+                    let spiltxy = res
+                        .trim()
+                        .split('\n')
+                        .map((lines) => {
+                            return lines.trim().split(/\s+/)
+                        })
                     tmp[cha] = {
                         //以陣列[]存ENZ三分量
-                        x: spiltxy.map(([x, y]) => x),
-                        y: spiltxy.map(([x, y]) => y),
+                        x: spiltxy.map(([x, y]) => parseFloat(x)),
+                        y: spiltxy.map(([x, y]) => parseFloat(y)),
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -64,7 +66,7 @@ export const useBATS = defineStore('batsevent', () => {
             })
         })
 
-        waveform.value = { staCode: station, waveform: tmp, event: '2023,080,01:44:59', network: 'BATS' }
+        waveform.value = { staCode: station, waveform: tmp, event: '2023-03-21 01:44:59', network: 'BATS' }
     }
     return { Cstations, waveform, getWaveformData }
 })

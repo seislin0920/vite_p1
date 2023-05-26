@@ -87,7 +87,7 @@ onMounted(() => {
         new L.Draggable(legend).enable()
     })
 
-    //地質圖
+    //地質圖磚
     const tw_geology = L.tileLayer('http://140.109.82.44/assets/tw_geology/{z}/{x}/{y}.png', {
         maxZoom: 14,
         minZoom: 6,
@@ -122,7 +122,7 @@ onMounted(() => {
         interactive: true, //mouse event 可觸發
     })
     const pa_int = L.layerGroup([pa_over])
-
+    console.log(pa_int);
     // //P-Alert測站樣式
     const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
     let pmarkers = []

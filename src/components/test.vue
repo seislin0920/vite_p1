@@ -161,10 +161,10 @@ onMounted(() => {
             'network: BATS' +
             '<br />' +
             'Latitude: ' +
-            row.latitude +
+            row.lat +
             '<br />' +
             'Longitude: ' +
-            row.longitude +
+            row.long +
             '<br />' +
         `<button >波形</button>`)
         let button = div.querySelector("button")
@@ -174,7 +174,7 @@ onMounted(() => {
             // userdata.value = { station: row.stationId }
         }
 
-        let circle = L.circle([row.latitude, row.longitude], {
+        let circle = L.circle([row.lat, row.long], {
             color: '#3388ff',
             fillOpacity: 0,
             radius: 1500,

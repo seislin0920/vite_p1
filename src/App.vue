@@ -4,7 +4,7 @@ import ep3emit from '@/components/EP3_emit.vue'
 import ep4 from '@/components/EP4.vue'
 import hellow from '@/components/HelloWorld.vue'
 import map from '@/components/map.vue'
-import tile from '@/components/tile.vue'; //src目錄下
+import tile from '@/components/test.vue'; //src目錄下
 import { computed, ref } from 'vue'
 
 const ischang = ref(0)
@@ -44,7 +44,7 @@ const clallback = (res) => {
         <button @click="changecomponents(0)">hellow</button>
         <button @click="changecomponents(1)">ep3</button>
         <button @click="changecomponents(2)">ep3emit</button>
-        <button @click="changecomponents(3)">tile</button>
+        <button @click="changecomponents(3)">test</button>
         <button @click="changecomponents(4)">ep4</button>
         <button @click="changecomponents(5)">map</button>
 

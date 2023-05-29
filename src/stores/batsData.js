@@ -16,11 +16,11 @@ export const useBATS = defineStore('batsevent', () => {
                 return meta.trim().split(/\s+/)
             })
             tmp2.shift() //去除title
-            Cstations.value = tmp2.map(([stationId, latitude, longitude, elevation]) => {
+            Cstations.value = tmp2.map(([stationId, lat, long, elevation]) => {
                 return {
                     stationId,
-                    latitude,
-                    longitude,
+                    lat,
+                    long,
                     elevation,
                 }
             })

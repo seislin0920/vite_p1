@@ -1,5 +1,5 @@
 <script setup>
-import { LCircleMarker, LControlLayers, LControlScale, LImageOverlay, LMap, LPopup, LTileLayer } from "@vue-leaflet/vue-leaflet";
+import { LCircleMarker, LControlLayers, LControlScale, LImageOverlay, LMap, LPopup, LTileLayer, LPolyline } from "@vue-leaflet/vue-leaflet";
 import $ from 'jquery';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -11,11 +11,14 @@ import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/f
 import { useBATS } from '@/stores/batsData.js';
 import { useDialog } from '@/stores/dialog.js';
 import { usePAlert } from '@/stores/pStation.js';
+import { usefaultPlot } from '@/stores/faultPlot.js';
 
 const { dialogState } = storeToRefs(useDialog())
 const { Pstations } = storeToRefs(usePAlert())
 const { Cstations } = storeToRefs(useBATS())
 const { getWaveformData } = useBATS()
+const { tempArray, test } = storeToRefs(usefaultPlot())
+// console.log(tmp.value);
 
 //create map
 const map = ref(null);
@@ -164,6 +167,12 @@ onMounted(() => {
             </LPopup>
         </LCircleMarker>
 
+        <!-- Faults -->
+        <LPolyline v-for="fault in test" :key="fault.name" :lat-lngs="fault.latlong" :color="'red'">
+            <LPopup>
+                {{ fault.html }}
+            </LPopup>
+        </LPolyline>
     </LMap>
     <div class="checkbox">
         <label class="container"><input type="checkbox" v-model="cIv" /><span class="checkmark"></span>CWB_Intensity</label>

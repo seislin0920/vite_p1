@@ -114,13 +114,15 @@ export const usefaultPlot = defineStore('faults', () => {
         for (let i = 0; i < latArray.length; i++) {
             for (let j = 0; j < lineName.length; j++) {
                 if (lineName[j][0] == i) {
-                    let html =
-                        lineName[i][1] +
-                        '<div class="iw">' +
-                        'Comming soon ...' +
-                        '<br/>' +
-                        '<a>詳細資訊 </a>' +
-                        '</div>'
+                    let div = document.createElement('div')
+                    div.insertAdjacentHTML('beforeend', ``)
+                    let html = `
+                    ${lineName[i][1]}
+                    <div>
+                    Comming soon ...
+                    <br/>
+                    <a>詳細資訊</a>
+                    </div>`
                     // '<div class="iw">' +
                     // lineName[i][1] +
                     // '<br>' +

@@ -157,17 +157,15 @@ onMounted(() => {
         //popup及波型按鈕
         let div = document.createElement("div")
         div.insertAdjacentHTML(
-            "beforeend", `<b>${row.stationId}</b>` +
-            '<hr />' +
-            'network: BATS' +
-            '<br />' +
-            'Latitude: ' +
-            row.lat +
-            '<br />' +
-            'Longitude: ' +
-            row.long +
-            '<br />' +
-        `<button >波形</button>`)
+            "beforeend", `
+            <b>${row.stationId}</b>
+            <hr/>network: BATS
+            <br/>
+            Latitude:${row.lat}
+            <br/>
+            Longitude:${row.long}
+            <br/>
+            <button >波形</button>`)
         let button = div.querySelector("button")
         button.onclick = () => {
             dialogState.value = true;

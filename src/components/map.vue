@@ -131,9 +131,9 @@ onMounted(() => {
         <LImageOverlay :url="cIntensity.url" :bounds="cIntensity.bounds" v-model:opacity="opacity" v-model:visible="cIv" />
         <LImageOverlay :url="pIntensity.url" :bounds="pIntensity.bounds" v-model:opacity="opacity" v-model:visible="pIv" />
         <LTileLayer :key="tw_geology.name" :name="tw_geology.name" :url="tw_geology.url"
-            :attribution="tw_geology.attribution" v-model:opacity="opacity" :visible="twV" />
-        <LTileLayer :key="seismicity.name" :name="seismicity.name" :url="seismicity.url"
-            :attribution="seismicity.attribution" v-model:opacity="opacity" :visible="seisV" />
+            :attribution="tw_geology.attribution" z-index="100" v-model:opacity="opacity" :visible="twV" />
+        <LTileLayer :key="seismicity.name" :name="seismicity.name" :url="seismicity.url" z-index="100"
+            v-model:opacity="opacity" :visible="seisV" />
 
         <!-- Stationlist -->
         <LCircleMarker v-for="marker in Cstations" :key="marker.stationId" :visible="batsV"
@@ -168,11 +168,11 @@ onMounted(() => {
         </LCircleMarker>
 
         <!-- Faults -->
-        <LPolyline v-for="fault in test" :key="fault.name" :lat-lngs="fault.latlong" :color="'red'">
+        <!-- <LPolyline v-for="fault in test" :key="fault.name" :lat-lngs="fault.latlong" :color="'red'">
             <LPopup>
                 {{ fault.html }}
             </LPopup>
-        </LPolyline>
+        </LPolyline> -->
     </LMap>
     <div class="checkbox">
         <label class="container"><input type="checkbox" v-model="cIv" /><span class="checkmark"></span>CWB_Intensity</label>

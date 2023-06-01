@@ -1,5 +1,5 @@
 <script setup>
-import { LCircleMarker, LControlLayers, LControlScale, LImageOverlay, LMap, LPopup, LTileLayer, LPolyline } from "@vue-leaflet/vue-leaflet";
+import { LCircleMarker, LControlLayers, LControlScale, LImageOverlay, LMap, LPolyline, LPopup, LTileLayer } from "@vue-leaflet/vue-leaflet";
 import $ from 'jquery';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -10,8 +10,8 @@ import dialogUI from '@/components/dialogUI.vue';
 import { LegendScope, getColorLegend, getPgaScale } from '@/components/statics/functions.js';
 import { useBATS } from '@/stores/batsData.js';
 import { useDialog } from '@/stores/dialog.js';
-import { usePAlert } from '@/stores/pStation.js';
 import { usefaultPlot } from '@/stores/faultPlot.js';
+import { usePAlert } from '@/stores/pStation.js';
 
 const { dialogState } = storeToRefs(useDialog())
 const { Pstations } = storeToRefs(usePAlert())
@@ -131,9 +131,9 @@ onMounted(() => {
         <LImageOverlay :url="cIntensity.url" :bounds="cIntensity.bounds" v-model:opacity="opacity" v-model:visible="cIv" />
         <LImageOverlay :url="pIntensity.url" :bounds="pIntensity.bounds" v-model:opacity="opacity" v-model:visible="pIv" />
         <LTileLayer :key="tw_geology.name" :name="tw_geology.name" :url="tw_geology.url"
-            :attribution="tw_geology.attribution" z-index="100" v-model:opacity="opacity" :visible="twV" />
-        <LTileLayer :key="seismicity.name" :name="seismicity.name" :url="seismicity.url" z-index="100"
-            v-model:opacity="opacity" :visible="seisV" />
+            :attribution="tw_geology.attribution" :z-index="500" v-model:opacity="opacity" :visible="twV" />
+        <LTileLayer :key="seismicity.name" :name="seismicity.name" :url="seismicity.url"
+            :attribution="seismicity.attribution" :z-index="500" v-model:opacity="opacity" :visible="seisV" />
 
         <!-- Stationlist -->
         <LCircleMarker v-for="marker in Cstations" :key="marker.stationId" :visible="batsV"
@@ -168,11 +168,14 @@ onMounted(() => {
         </LCircleMarker>
 
         <!-- Faults -->
-        <!-- <LPolyline v-for="fault in test" :key="fault.name" :lat-lngs="fault.latlong" :color="'red'">
+        <LPolyline v-for="fault in test" :key="fault.name" :lat-lngs="fault.latlong" :color="'red'">
             <LPopup>
-                {{ fault.html }}
+                <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
+                <p>Comming soon ...</p>
+                <br />
+                <a>詳細資訊</a>
             </LPopup>
-        </LPolyline> -->
+        </LPolyline>
     </LMap>
     <div class="checkbox">
         <label class="container"><input type="checkbox" v-model="cIv" /><span class="checkmark"></span>CWB_Intensity</label>

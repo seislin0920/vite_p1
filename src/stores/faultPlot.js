@@ -42,7 +42,7 @@ export const usefaultPlot = defineStore('faults', () => {
     //Geographical Lines Color Arrays
     let ODindex = [0, 1, 2, 14, 18, 23, 24, 25, 26, 27, 29, 30, 31, 33, 35, 40, 41]
     let OSindex = [14, 25, 35]
-    let BDindex = ref([])
+    let BDindex = []
     let BSindex = [4, 5, 13, 16, 17, 20, 21, 28, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58] //TODO:BSindex
     let RDindex = [3, 6, 7, 8, 9, 10, 11, 12, 15, 19, , 22, 32, 34, 36, 37, 38, 39]
     let lineName = [
@@ -106,7 +106,7 @@ export const usefaultPlot = defineStore('faults', () => {
         [[57], ['車籠埔斷層及其支斷層']],
         [[58], ['車籠埔支斷層(隘寮斷層)']],
     ]
-    // console.log(tempArray.value.length)
+
     let test = ref([])
     leafLines(tempArray.value)
 
@@ -114,27 +114,15 @@ export const usefaultPlot = defineStore('faults', () => {
         for (let i = 0; i < latArray.length; i++) {
             for (let j = 0; j < lineName.length; j++) {
                 if (lineName[j][0] == i) {
-                    let div = document.createElement('div')
-                    div.insertAdjacentHTML('beforeend', ``)
-                    let html = `
-                    ${lineName[i][1]}
-                    <div>
-                    Comming soon ...
-                    <br/>
-                    <a>詳細資訊</a>
-                    </div>`
-                    // '<div class="iw">' +
-                    // lineName[i][1] +
-                    // '<br>' +
-                    // '<a href="javascript:lineInfo(' +
-                    // "'" +
-                    // lineName[i][1] +
-                    // "'" +
-                    // ')">詳細資訊 </a>' +
-                    // '</div>'
-
-                    // console.log(lineName[i][1])
-                    test.value.push({ name: lineName[i][1], latlong: latArray[i], html: html })
+                    test.value.push({ name: lineName[i][1], latlong: latArray[i] })
+                }
+            }
+            //BLack solid lines
+            for (let j = 0; j < BSindex.length; j++) {
+                let temp = BSindex[j]
+                console.log(temp)
+                if (i == temp) {
+                    test.value.push({ fault: 1 })
                 }
             }
         }

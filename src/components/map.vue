@@ -1,5 +1,8 @@
 <script setup>
-import { LCircleMarker, LControlLayers, LControlScale, LImageOverlay, LMap, LPolyline, LPopup, LTileLayer } from "@vue-leaflet/vue-leaflet";
+import {
+    LCircleMarker, LControlLayers, LControlScale, LImageOverlay, LMap,
+    LPolyline, LPopup, LTileLayer
+} from "@vue-leaflet/vue-leaflet";
 import $ from 'jquery';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -168,14 +171,51 @@ onMounted(() => {
         </LCircleMarker>
 
         <!-- Faults -->
-        <LPolyline v-for="fault in test" :key="fault.name" :lat-lngs="fault.latlong" :color="'red'">
-            <LPopup>
-                <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
-                <p>Comming soon ...</p>
-                <br />
-                <a>詳細資訊</a>
-            </LPopup>
-        </LPolyline>
+        <div v-for="fault in test" :key="fault.name">
+            <LPolyline v-if="fault.class == 1" :color="'black'" :weight="2.5" :lat-lngs="fault.latlong">
+                <LPopup>
+                    <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
+                    <p>Comming soon ...</p>
+                    <br />
+                    <a>詳細資訊</a>
+                </LPopup>
+            </LPolyline>
+            <LPolyline v-if="fault.class == 2" :color="'black'" :weight="2.5" :dashArray="'5,5'" :dashOffset="'2'"
+                :lat-lngs="fault.latlong">
+                <LPopup>
+                    <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
+                    <p>Comming soon ...</p>
+                    <br />
+                    <a>詳細資訊</a>
+                </LPopup>
+            </LPolyline>
+            <LPolyline v-if="fault.class == 3" :color="'#FFA52F'" :weight="2.5" :dashArray="'5,5'" :dashOffset="'2'"
+                :lat-lngs="fault.latlong">
+                <LPopup>
+                    <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
+                    <p>Comming soon ...</p>
+                    <br />
+                    <a>詳細資訊</a>
+                </LPopup>
+            </LPolyline>
+            <LPolyline v-if="fault.class == 4" :color="'#FFA52F'" :weight="2.5" :lat-lngs="fault.latlong">
+                <LPopup>
+                    <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
+                    <p>Comming soon ...</p>
+                    <br />
+                    <a>詳細資訊</a>
+                </LPopup>
+            </LPolyline>
+            <LPolyline v-if="fault.class == 5" :color="'red'" :weight="2.5" :dashArray="'5,5'" :dashOffset="'2'"
+                :lat-lngs="fault.latlong">
+                <LPopup>
+                    <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
+                    <p>Comming soon ...</p>
+                    <br />
+                    <a>詳細資訊</a>
+                </LPopup>
+            </LPolyline>
+        </div>
     </LMap>
     <div class="checkbox">
         <label class="container"><input type="checkbox" v-model="cIv" /><span class="checkmark"></span>CWB_Intensity</label>

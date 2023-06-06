@@ -1,6 +1,9 @@
 <script setup>
 import {
-    LCircleMarker, LControlLayers, LControlScale, LImageOverlay, LMap,
+    LCircleMarker, LControlLayers, LControlScale,
+    LIcon,
+    LImageOverlay, LMap,
+    LMarker,
     LPolyline, LPopup, LTileLayer
 } from "@vue-leaflet/vue-leaflet";
 import $ from 'jquery';
@@ -20,7 +23,8 @@ const { dialogState } = storeToRefs(useDialog())
 const { Pstations } = storeToRefs(usePAlert())
 const { Cstations } = storeToRefs(useBATS())
 const { getWaveformData } = useBATS()
-const { tempArray, test } = storeToRefs(usefaultPlot())
+const { faults } = storeToRefs(usefaultPlot())
+let faultV = ref(false)
 // console.log(tmp.value);
 
 //create map
@@ -92,6 +96,22 @@ let batsV = ref(false)
 //P-Alert測站
 const pgaco = getPgaScale(LegendScope.pgaDomain, LegendScope.pgaRange) //取得參數
 let palertV = ref(false)
+
+//Focal Mechanism
+let pathFocal = 'http://140.109.82.44/assets/Data/2023/2023.080.01.45.19/FM'
+let eTime = '2023.080.01.45'
+let fAutoBATS = `${pathFocal}/AutoBATS/${eTime}_beachball.png`
+let vAutoBATS = ref(false)
+let fRMT = `${pathFocal}/RMT/${eTime}.meca.png`
+let vRMT = ref(false)
+let fWP = `${pathFocal}/WP/CMT.png`
+let vWP = ref(false)
+let focal = [23.65, 121.31]
+let iconSize = [40, 40] // size of the icon
+let iconAnchor = [18, 18] // point of the icon which will correspond to marker's location
+
+
+
 
 onMounted(() => {
     //PGA_scale
@@ -171,8 +191,8 @@ onMounted(() => {
         </LCircleMarker>
 
         <!-- Faults -->
-        <div v-for="fault in test" :key="fault.name">
-            <LPolyline v-if="fault.class == 1" :color="'black'" :weight="2.5" :lat-lngs="fault.latlong">
+        <div v-for="fault in faults" :key="fault.name">
+            <LPolyline v-if="fault.class == 1" :color="'black'" :weight="2.5" :lat-lngs="fault.latlong" :visible="faultV">
                 <LPopup>
                     <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
                     <p>Comming soon ...</p>
@@ -181,7 +201,7 @@ onMounted(() => {
                 </LPopup>
             </LPolyline>
             <LPolyline v-if="fault.class == 2" :color="'black'" :weight="2.5" :dashArray="'5,5'" :dashOffset="'2'"
-                :lat-lngs="fault.latlong">
+                :lat-lngs="fault.latlong" :visible="faultV">
                 <LPopup>
                     <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
                     <p>Comming soon ...</p>
@@ -190,7 +210,7 @@ onMounted(() => {
                 </LPopup>
             </LPolyline>
             <LPolyline v-if="fault.class == 3" :color="'#FFA52F'" :weight="2.5" :dashArray="'5,5'" :dashOffset="'2'"
-                :lat-lngs="fault.latlong">
+                :lat-lngs="fault.latlong" :visible="faultV">
                 <LPopup>
                     <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
                     <p>Comming soon ...</p>
@@ -198,7 +218,7 @@ onMounted(() => {
                     <a>詳細資訊</a>
                 </LPopup>
             </LPolyline>
-            <LPolyline v-if="fault.class == 4" :color="'#FFA52F'" :weight="2.5" :lat-lngs="fault.latlong">
+            <LPolyline v-if="fault.class == 4" :color="'#FFA52F'" :weight="2.5" :lat-lngs="fault.latlong" :visible="faultV">
                 <LPopup>
                     <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
                     <p>Comming soon ...</p>
@@ -207,7 +227,7 @@ onMounted(() => {
                 </LPopup>
             </LPolyline>
             <LPolyline v-if="fault.class == 5" :color="'red'" :weight="2.5" :dashArray="'5,5'" :dashOffset="'2'"
-                :lat-lngs="fault.latlong">
+                :lat-lngs="fault.latlong" :visible="faultV">
                 <LPopup>
                     <b>{{ fault.name.join("") }}</b> <!--join鎮裂變字串  每個元素分隔("")-->
                     <p>Comming soon ...</p>
@@ -216,6 +236,18 @@ onMounted(() => {
                 </LPopup>
             </LPolyline>
         </div>
+
+        <!-- Focal Mechanism -->
+        <LMarker :visible="vAutoBATS" :lat-lng="focal">
+            <LIcon :icon-url="fAutoBATS" :icon-size="iconSize" :icon-anchor="iconAnchor"></LIcon>
+        </LMarker>
+        <LMarker :visible="vRMT" :lat-lng="focal">
+            <LIcon :icon-url="fRMT" :icon-size="iconSize" :icon-anchor="iconAnchor"></LIcon>
+        </LMarker>
+        <LMarker :visible="vWP" :lat-lng="focal">
+            <LIcon :icon-url="fWP" :icon-size="iconSize" :icon-anchor="iconAnchor"></LIcon>
+        </LMarker>
+
     </LMap>
     <div class="checkbox">
         <label class="container"><input type="checkbox" v-model="cIv" /><span class="checkmark"></span>CWB_Intensity</label>
@@ -224,15 +256,24 @@ onMounted(() => {
         <label class="container"><input type="checkbox" v-model="twV" /><span
                 class="checkmark"></span>Taiwan_Geology</label>
         <label class="container"><input type="checkbox" v-model="seisV" /><span class="checkmark"></span>Seismicity</label>
-
         <label class="container"><input type="checkbox" v-model="batsV" /><span
                 class="checkmark"></span>BATS_stationlist</label>
         <label class="container"><input type="checkbox" v-model="palertV" /><span
                 class="checkmark"></span>P-Alert_stationlist</label>
+        <label class="container"><input type="checkbox" v-model="faultV" /><span class="checkmark"></span>Faults</label>
 
         <input class="opacityrange" type="range" v-model.number=opacity min="0" max="1" step="0.1" />
         <br />
         <label>Opacity:{{ opacity }}</label>
+
+        <div style="position: relative; margin-top: 20%">
+            <h2 style="font-size: 2ch;">Focal Mechanism</h2>
+            <label class="container"><input type="checkbox" v-model="vAutoBATS" /><span
+                    class="checkmark"></span>AutoBATS</label>
+            <label class="container"><input type="checkbox" v-model="vRMT" /><span class="checkmark"></span>RMT</label>
+            <label class="container"><input type="checkbox" v-model="vWP" /><span class="checkmark"></span>WP</label>
+        </div>
+
     </div>
 
     <div class="legend">

@@ -6,7 +6,7 @@ export const usefaultPlot = defineStore('faults', () => {
     //link
     let faultpath = 'src/components/statics/fault2014.dat'
     //readFaultData & //Processes line
-    let tempArray = ref([])
+    let tempArray = []
     let errorCount = 0
     $.ajax({
         url: faultpath,
@@ -26,7 +26,7 @@ export const usefaultPlot = defineStore('faults', () => {
                             tmpfault.push([parseFloat(LnLg[0]), parseFloat(LnLg[1])])
                             // console.log(tmpfault)
                         })
-                    tempArray.value.push(tmpfault)
+                    tempArray.push(tmpfault)
                 })
             if (errorCount === 0) {
                 // console.log(JSON.stringify(tempArray))
@@ -107,8 +107,8 @@ export const usefaultPlot = defineStore('faults', () => {
         [[58], ['車籠埔支斷層(隘寮斷層)']],
     ]
 
-    let test = ref([])
-    leafLines(tempArray.value)
+    let faults = ref([])
+    leafLines(tempArray)
 
     function leafLines(latArray) {
         for (let i = 0; i < latArray.length; i++) {
@@ -118,37 +118,37 @@ export const usefaultPlot = defineStore('faults', () => {
                     //BLack solid lines
                     for (let k = 0; k < BSindex.length; k++) {
                         if (i == BSindex[k]) {
-                            test.value.push({ name: lineName[i][1], latlong: latArray[i], class: 1 })
+                            faults.value.push({ name: lineName[i][1], latlong: latArray[i], class: 1 })
                         }
                     }
                     //BLack dotted lines
                     for (let k = 0; k < BDindex.length; k++) {
                         if (i == BDindex[k]) {
-                            test.value.push({ name: lineName[i][1], latlong: latArray[i], class: 2 })
+                            faults.value.push({ name: lineName[i][1], latlong: latArray[i], class: 2 })
                         }
                     }
                     //Orange Dotted Lines
                     for (let k = 0; k < ODindex.length; k++) {
                         if (i == ODindex[k]) {
-                            test.value.push({ name: lineName[i][1], latlong: latArray[i], class: 3 })
+                            faults.value.push({ name: lineName[i][1], latlong: latArray[i], class: 3 })
                         }
                     }
                     //Orange Solid Lines
                     for (let k = 0; k < OSindex.length; k++) {
                         if (i == OSindex[k]) {
-                            test.value.push({ name: lineName[i][1], latlong: latArray[i], class: 4 })
+                            faults.value.push({ name: lineName[i][1], latlong: latArray[i], class: 4 })
                         }
                     }
                     //Red Dotted Lines
                     for (let k = 0; k < RDindex.length; k++) {
                         if (i == RDindex[k]) {
-                            test.value.push({ name: lineName[i][1], latlong: latArray[i], class: 5 })
+                            faults.value.push({ name: lineName[i][1], latlong: latArray[i], class: 5 })
                         }
                     }
                 }
             }
         }
     }
-    console.log(test.value)
-    return { tempArray, test }
+    console.log(faults.value)
+    return { faults }
 })

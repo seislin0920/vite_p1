@@ -65,7 +65,7 @@ let tw_geology = {
 };
 let seisV = ref(false)
 let seismicity = {
-    url: 'http://140.109.82.44/assets/seismicity_1990_M4/{z}/{x}/{y}.png',
+    url: 'src/assets/seismicity_1990_M4/{z}/{x}/{y}.png',
     maxZoom: 13,
     minZoom: 6,
     attribution: 'seismicity_1990_M4',
